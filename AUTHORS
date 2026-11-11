@@ -1,0 +1,9 @@
+# Authors
+
+- **DarkDevil-937** - <https://github.com/DarkDevil-937>
+  App wrapper, build scripts, and documentation.
+
+## Third-party
+
+- **GhostLock** (CVE-2026-43499) - kernel exploit sources under `exploit/`.
+  See `exploit/NOTICE` for upstream terms.

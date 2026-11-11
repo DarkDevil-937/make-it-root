@@ -106,7 +106,7 @@ See [docs/BUILDING.md](docs/BUILDING.md). You need the Android SDK build tools (
 ## Credits
 
 - Exploit: **GhostLock** (CVE-2026-43499). The sources under `exploit/` are third-party research code; see [exploit/NOTICE](exploit/NOTICE).
-- App, build scripts, and documentation: the Make it ROOT contributors.
+- App, build scripts, and documentation: **DarkDevil-937** ([@DarkDevil-937](https://github.com/DarkDevil-937)).
 
 ## License
 
