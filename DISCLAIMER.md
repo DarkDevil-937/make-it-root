@@ -4,6 +4,14 @@ Make it ROOT and the bundled exploit are provided **for educational and research
 purposes only**, and for use on devices **you own or are explicitly authorized to
 modify**.
 
+## Supported model
+
+This has been tested on **exactly one model**: Amazon Fire TV Stick 3rd gen,
+model number **AFTSSS** (codename `sheldonp`), Fire OS **7.7.1.7**, build
+`PS7717/5746` (incremental `0036408029828`). It is not supported on any other
+Fire TV model, Fire OS version, or build. Running it elsewhere can hang or brick
+the device.
+
 ## Use at your own risk
 
 - Rooting modifies your device and **voids warranties**.
