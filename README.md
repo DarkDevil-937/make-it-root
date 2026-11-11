@@ -6,7 +6,7 @@ Make it ROOT wraps the GhostLock kernel exploit (CVE-2026-43499) in a small Andr
 
 > **Tested on exactly one model:** Fire TV Stick 3rd gen, model number **AFTSSS** (codename `sheldonp`), Fire OS **7.7.1.7**, build `PS7717/5746` (incremental `0036408029828`). This is the only model and firmware this has been tested on. Do not run it on any other Fire TV model or Fire OS build.
 
-> This is **temporary root**, not a permanent unlock. The device may hang and the watchdog may reboot it a minute or two after rooting. Press **STOP ROOT** when you are done; the stick reboots to clear the exploit state. For permanent, reboot-proof root you need the bootloader unlock (kamakiri + TWRP + Magisk) from a real PC/USB host.
+> This is **temporary root**, not a permanent unlock. The device can still hang and the watchdog can reboot it. Press **STOP ROOT** when you are done; the stick may reboot to clear the exploit state. For permanent, reboot-proof root you need the bootloader unlock (kamakiri + TWRP + Magisk) from a real PC/USB host.
 
 Read [DISCLAIMER.md](DISCLAIMER.md) before using this.
 
@@ -16,8 +16,8 @@ Read [DISCLAIMER.md](DISCLAIMER.md) before using this.
 - No PC required for the temporary root
 - Ships the exploit inside the APK (armv7, `sheldonp`)
 - Works on a fresh, SELinux-enforcing boot:
-  - the app uses its own bundled binary as the root client (`libglroot.so --su ...`), so it does not depend on an external `su` file;
-  - the exploit sets SELinux permissive before installing `/data/local/tmp/gl/su`;
+  - the app uses its own bundled binary as the root client (`libglroot.so --su ...`);
+  - the exploit patches only its own credentials and exposes a root command socket. It does **not** change SELinux, install a `su` file, mount anything, or disable OTA;
   - after opening its ashmem handle, the exploit restores the original `ashmem_misc_fops` pointer so new system `/dev/ashmem` opens are safe.
 - No auto-root on boot. This is deliberate: because the exploit is unstable, auto-root causes an endless root -> hang -> reboot loop.
 
@@ -62,14 +62,14 @@ bash scripts/install-autoroot.sh <firestick-ip>:5555
 
 ## Usage
 
-- **ROOT NOW** runs the exploit and installs a temporary `su` at `/data/local/tmp/gl/su`. Takes about 10-15 seconds.
+- **ROOT NOW** runs the exploit and starts a root command daemon. Takes about 10-15 seconds.
 - **CHECK ROOT** shows the current status.
-- **STOP ROOT** stops the root daemons and removes `su`. The stick will usually reboot on its own shortly after; that reboot is the clean reset.
+- **STOP ROOT** stops the root daemon. The stick may reboot on its own shortly after; that reboot is the clean reset.
 
-From a shell while rooted:
+From a shell while rooted, use the app's bundled client:
 
 ```sh
-adb shell /data/local/tmp/gl/su -c id
+adb shell 'D=$(dirname $(pm path com.jhajj.autoroot | sed s/package://)); $D/lib/arm/libglroot.so --su -c id'
 # uid=0(root) ...
 ```
 
@@ -81,9 +81,9 @@ ROOT NOW  ->  do your task quickly  ->  STOP ROOT (or reboot)
 
 ## Important limitations
 
-This exploit gives **temporary** root. It corrupts kernel state (the ashmem fops pointer / PI-futex state) and is not designed to stay rooted:
+This exploit gives **temporary** root. It corrupts kernel state (the PI-futex state) and is not designed to stay rooted forever:
 
-- The device can still hang and the MTK watchdog can reboot it. On the fops-restore build the stick survived ~9 minutes in testing (the earlier build rebooted in ~1-3 minutes), so treat root as a short-lived window.
+- This build removes the SELinux/su/mount/OTA changes and survived ~2.5 minutes of active UI use in testing, but the device can still hang and the MTK watchdog can reboot it.
 - Root does not survive a reboot.
 - dm-verity still blocks permanent system changes.
 - Auto-root on boot is disabled because it caused an endless root -> hang -> reboot loop.
@@ -104,8 +104,8 @@ See [docs/BUILDING.md](docs/BUILDING.md). You need the Android SDK build tools (
 
 | File | SHA-256 |
 |---|---|
-| `dist/make-it-root.apk` | `d7acfcc2b77043d864e82a9af74aedfdde0316c605234fe24dfb9e9f68cd3616` |
-| `dist/libglroot.so` | `0c1527673dd9cedd70abeb57f6627c4144bbb5d05a6ca489e6faa782eff2dd97` |
+| `dist/make-it-root.apk` | `69effe214faa54525458825357b8c9b63a18e07337f16160d6f6d0f604ae9e52` |
+| `dist/libglroot.so` | `faf36faa6ec9c61a650bb94c8855d8ccf060beb6d6073fe0fcfefa923bc0dc1a` |
 
 ## Credits
 
