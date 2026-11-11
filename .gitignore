@@ -1,0 +1,45 @@
+# Build outputs
+build/
+out/
+*.class
+*.dex
+*.apk.idsig
+*.aligned.apk
+*.unsigned.apk
+
+# Local SDK / toolchain (download or install yourself)
+sdk/
+toolchain/
+local.properties
+
+# Signing material - never commit
+*.keystore
+*.jks
+*.p12
+*.pem
+
+# Device-specific dumps / firmware / backups - never commit
+backup-*/
+*.img
+*.bin
+*.zip
+preloader*
+boot*.bak
+lk*.bak
+tee*.bak
+recovery*.bak
+gpt*.bak
+
+# Logs and runtime junk
+*.log
+root-ok.txt
+gl-run.log
+run.log
+autoroot.log
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
