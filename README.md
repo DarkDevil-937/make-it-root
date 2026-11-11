@@ -79,11 +79,30 @@ Recommended workflow:
 ROOT NOW  ->  do your task quickly  ->  STOP ROOT (or reboot)
 ```
 
+## Stable temp root via ADB (phone only)
+
+The app-launched daemon lives in the app's `uid_<app>` cgroup, so Android can kill it together with the app. Launching the same binary from an ADB shell puts it in the `uid_0` cgroup instead, which survives app kills. This is the most stable temporary-root path (tested: survived ~7 minutes of light UI use).
+
+```sh
+bash scripts/temp-root.sh <firestick-ip>:5555
+```
+
+Or manually:
+
+```sh
+adb shell 'setsid /data/local/tmp/libglroot.so --tries 6 >/data/local/tmp/glroot.log 2>&1 &'
+# wait ~15 s
+adb shell '/data/local/tmp/libglroot.so --su -c id'
+```
+
+The script pushes `dist/libglroot.so` to `/data/local/tmp/libglroot.so` if needed, starts the daemon detached, and waits for root. This is still temporary root: heavy use can still hang the kernel and trigger the watchdog.
+
 ## Important limitations
 
 This exploit gives **temporary** root. It corrupts kernel state (the PI-futex state) and is not designed to stay rooted forever:
 
 - This build removes the SELinux/su/mount/OTA changes and survived ~2.5 minutes of active UI use in testing, but the device can still hang and the MTK watchdog can reboot it.
+- A Fire OS firmware downgrade is not possible without the bootloader unlock (kamakiri). Do not flash the vulnerable preloader (`downgrade-preloader.sh`) unless you can finish kamakiri from a real USB host — the stick will not boot until then.
 - Root does not survive a reboot.
 - dm-verity still blocks permanent system changes.
 - Auto-root on boot is disabled because it caused an endless root -> hang -> reboot loop.
